@@ -1,107 +1,96 @@
 interface Opts {
-	inline?: boolean;
+	inline?: boolean
 }
 
 export class Test {
-	output: string;
-	opts?: Opts;
-	initialString?: string;
+	output: string
+	opts?: Opts
+	initialString?: string
 
-	constructor(string?: string, opts?: Opts) {
-		this.output = string || '';
-		this.opts = opts;
-		this.initialString = string;
-		return this;
+	constructor(start?: string, opts?: Opts) {
+		this.output = start || ''
+		this.opts = opts
+		this.initialString = start
+		return this
 	}
 
-	app(strings: TemplateStringsArray, ...values: any) {
-		this.#processStrings(strings, values, false); // false indicates appending
+	append(strings: TemplateStringsArray, ...values: any) {
+		this.#processStrings(strings, values, false) // false indicates appending
 
-		return this;
+		return this
 	}
 
-	pre(strings: TemplateStringsArray, ...values: any) {
+	prepend(strings: TemplateStringsArray, ...values: any) {
 		// Remove the initial string from the output before prepending
-		if (
-			this.initialString &&
-			this.output.startsWith(this.initialString)
-		) {
-			this.output = this.output.slice(
-				this.initialString.length
-			);
+		if (this.initialString && this.output.startsWith(this.initialString)) {
+			this.output = this.output.slice(this.initialString.length)
 		}
 
-		this.#processStrings(strings, values, true); // true indicates prepending
+		this.#processStrings(strings, values, true) // true indicates prepending
 
 		// Then re-apply it so it's at the start of the string
-		this.output = this.initialString + this.output;
+		this.output = this.initialString + this.output
 
-		return this;
+		return this
 	}
 
 	get() {
-		return this.output;
+		return this.output
 	}
 
-	#processStrings(
-		strings: TemplateStringsArray,
-		values: any,
-		isPrepend: boolean
-	) {
+	#processStrings(strings: TemplateStringsArray, values: any, isPrepend: boolean) {
 		if (Array.isArray(strings)) {
-			let str = '';
+			let str = ''
 
 			strings.forEach((string, a) => {
-				if (values[a] === 0)
-					values[a] = values[a].toString();
+				if (values[a] === 0) values[a] = values[a].toString()
 
-				str += string + (values[a] || '');
+				str += string + (values[a] || '')
 
-				let nextToArg = a < strings.length - 1;
+				let nextToArg = a < strings.length - 1
 				if (!this.opts?.inline && !nextToArg) {
-					str += '\n';
+					str += '\n'
 				}
-			});
+			})
 
-			str = this.#removeExcessIndent(str);
+			str = this.#removeExcessIndent(str)
 
 			if (isPrepend) {
-				this.output = str + this.output; // Prepend the processed string
+				this.output = str + this.output // Prepend the processed string
 			} else {
-				this.output += str; // Append the processed string
+				this.output += str // Append the processed string
 			}
 		}
 	}
 
 	#removeExcessIndent(str: string): string {
-		const lines = str.split('\n');
+		const lines = str.split('\n')
 
 		// Find the minimum indentation of non-empty lines (excluding the first line)
 		const minIndent = lines
 			.slice(1) // Skip the first line
 			.filter((line) => line.trim().length > 0) // Exclude empty lines
 			.reduce((min, line) => {
-				const leadingWhitespace =
-					line.match(/^\s*/)?.[0].length || 0;
-				return Math.min(min, leadingWhitespace);
-			}, Infinity);
+				const leadingWhitespace = line.match(/^\s*/)?.[0].length || 0
+				return Math.min(min, leadingWhitespace)
+			}, Infinity)
 
-		if (minIndent === Infinity) return str; // In case all lines are empty or it's a single-line string
+		if (minIndent === Infinity) return str // In case all lines are empty or it's a single-line string
 
 		// Remove the minimum indentation from all lines except the first
 		const adjustedLines = lines.map((line, index) => {
-			if (index === 0) return line; // Keep the first line as is
-			return line.slice(minIndent); // Remove the excess indent from other lines
-		});
+			if (index === 0) return line // Keep the first line as is
+			return line.slice(minIndent) // Remove the excess indent from other lines
+		})
 
-		return adjustedLines.join('\n');
+		return adjustedLines.join('\n')
 	}
 }
 
-let str = new Test('@');
+let str = new Test('@')
 
-let thing = 'yoooo';
-let second = 'asasas';
+let thing = 'yoooo'
+let second = 'asasas'
 
 // prettier-ignore
 str	.app`:where(html) {`
@@ -113,4 +102,4 @@ str	.app`:where(html) {`
 				test
 			}`;
 
-console.log(str.output);
+console.log(str.output)
