@@ -40,6 +40,8 @@ console.log(str.output)
 
     When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you should include it manually eg `Str('@\n')`.
 
+    By default Str appends strings in a block with new lines, to change this, set the `inline` option to `true`.
+
     ```ts
     interface Opts {
         inline?: boolean
