@@ -36,7 +36,7 @@ console.log(str.output)
 
 -   ### Start string
 
-    `Str(string, Opts)`
+    `Str(string?: string, opts?: Opts)`
 
     When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you should include it manually eg `Str('@\n')`.
 
