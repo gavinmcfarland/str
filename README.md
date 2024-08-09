@@ -2,6 +2,9 @@
 
 Str is a template literal tag function that makes it easy to build up strings while ignoring unnecessary indents.
 
+> [!NOTE]
+> This package has not been published yet and is a work in progress.
+
 ## Usage
 
 ### Appending block strings
@@ -40,13 +43,17 @@ console.log(str.output)
 
     When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you should include it manually eg `Str('@\n')`.
 
-    By default Str appends strings in a block with new lines, to change this, set the `inline` option to `true`.
+    #### Options
 
     ```ts
     interface Opts {
         inline?: boolean
+        external?: string
     }
     ```
+
+    -   `inline` By default Str appends strings in a block with new lines, to change this, set to `true`.
+    -   `external` To access the output string externally, pass it as an object with Str('', opts). Note that it might include a trailing newline, which you can't remove without using a getter.
 
 -   ### Append a string
 
@@ -59,15 +66,3 @@ console.log(str.output)
 -   ### Get the output
 
     `str.output`
-
-## Staging
-
-```js
-let output = ''
-
-function str(value, opts) {
-    return new Str(value, { output })
-}
-
-str().append``
-```

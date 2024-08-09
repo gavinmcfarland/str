@@ -1,6 +1,6 @@
 interface Opts {
 	inline?: boolean
-	output?: string
+	external?: string
 }
 
 export class Str {
@@ -13,8 +13,8 @@ export class Str {
 		this.initialString = start
 		this.internalOutput = start || ''
 
-		if (this.opts.output !== undefined) {
-			this.opts.output = this.internalOutput
+		if (this.opts.external !== undefined) {
+			this.opts.external = this.internalOutput
 		}
 	}
 
@@ -26,27 +26,27 @@ export class Str {
 	prepend(strings: TemplateStringsArray, ...values: any) {
 		if (this.initialString && this.output.startsWith(this.initialString)) {
 			this.internalOutput = this.internalOutput.slice(this.initialString.length)
-			if (this.opts.output !== undefined) {
-				this.opts.output = this.opts.output.slice(this.initialString.length)
+			if (this.opts.external !== undefined) {
+				this.opts.external = this.opts.external.slice(this.initialString.length)
 			}
 		}
 
 		this.#processStrings(strings, values, true) // true indicates prepending
 
 		this.internalOutput = this.initialString + this.internalOutput
-		if (this.opts.output !== undefined) {
-			this.opts.output = this.initialString + this.opts.output
+		if (this.opts.external !== undefined) {
+			this.opts.external = this.initialString + this.opts.external
 		}
 
 		return this
 	}
 
 	get output() {
-		return this.#trimTrailingNewLine(this.opts.output ?? this.internalOutput)
+		return this.#trimTrailingNewLine(this.opts.external ?? this.internalOutput)
 	}
 
 	get() {
-		return this.#trimTrailingNewLine(this.opts.output ?? this.internalOutput)
+		return this.#trimTrailingNewLine(this.opts.external ?? this.internalOutput)
 	}
 
 	#processStrings(strings: TemplateStringsArray, values: any, isPrepend: boolean) {
@@ -69,13 +69,13 @@ export class Str {
 
 			if (isPrepend) {
 				this.internalOutput = str + this.internalOutput
-				if (this.opts.output !== undefined) {
-					this.opts.output = str + this.opts.output
+				if (this.opts.external !== undefined) {
+					this.opts.external = str + this.opts.external
 				}
 			} else {
 				this.internalOutput += str
-				if (this.opts.output !== undefined) {
-					this.opts.output += str
+				if (this.opts.external !== undefined) {
+					this.opts.external += str
 				}
 			}
 		}

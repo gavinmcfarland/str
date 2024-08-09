@@ -90,5 +90,5 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
 };
 let opts = { output: '' };
 let str = new Str('@', opts);
-str.append `Test`.append `what`.prepend `check`;
+str.append `Test`.append `check`.prepend `what`;
 console.log(str.get()); // This will output "Test"
