@@ -86,20 +86,3 @@ export class Test {
 		return adjustedLines.join('\n')
 	}
 }
-
-let str = new Test('@')
-
-let thing = 'yoooo'
-let second = 'asasas'
-
-// prettier-ignore
-str	.app`:where(html) {`
-	.app`	--font-size-1: ${thing} ${second};`
-	.app`	--font-size-2: sasas;`
-	.app`}`
-	.pre`div {
-				test
-				test
-			}`;
-
-console.log(str.output)
