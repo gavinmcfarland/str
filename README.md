@@ -59,3 +59,15 @@ console.log(str.output)
 -   ### Get the output
 
     `str.output`
+
+## Staging
+
+```js
+let output = ''
+
+function str(value, opts) {
+    return new Str(value, { output })
+}
+
+str().append``
+```

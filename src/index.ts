@@ -1,41 +1,52 @@
 interface Opts {
 	inline?: boolean
+	output?: string
 }
 
-export class Test {
-	output: string
-	opts?: Opts
-	initialString?: string
+export class Str {
+	private opts: Opts
+	private internalOutput: string
+	private initialString?: string
 
-	constructor(start?: string, opts?: Opts) {
-		this.output = start || ''
+	constructor(start?: string, opts: Opts = {}) {
 		this.opts = opts
 		this.initialString = start
-		return this
+		this.internalOutput = start || ''
+
+		if (this.opts.output !== undefined) {
+			this.opts.output = this.internalOutput
+		}
 	}
 
 	append(strings: TemplateStringsArray, ...values: any) {
 		this.#processStrings(strings, values, false) // false indicates appending
-
 		return this
 	}
 
 	prepend(strings: TemplateStringsArray, ...values: any) {
-		// Remove the initial string from the output before prepending
 		if (this.initialString && this.output.startsWith(this.initialString)) {
-			this.output = this.output.slice(this.initialString.length)
+			this.internalOutput = this.internalOutput.slice(this.initialString.length)
+			if (this.opts.output !== undefined) {
+				this.opts.output = this.opts.output.slice(this.initialString.length)
+			}
 		}
 
 		this.#processStrings(strings, values, true) // true indicates prepending
 
-		// Then re-apply it so it's at the start of the string
-		this.output = this.initialString + this.output
+		this.internalOutput = this.initialString + this.internalOutput
+		if (this.opts.output !== undefined) {
+			this.opts.output = this.initialString + this.opts.output
+		}
 
 		return this
 	}
 
+	get output() {
+		return this.#trimTrailingNewLine(this.opts.output ?? this.internalOutput)
+	}
+
 	get() {
-		return this.output
+		return this.#trimTrailingNewLine(this.opts.output ?? this.internalOutput)
 	}
 
 	#processStrings(strings: TemplateStringsArray, values: any, isPrepend: boolean) {
@@ -48,7 +59,8 @@ export class Test {
 				str += string + (values[a] || '')
 
 				let nextToArg = a < strings.length - 1
-				if (!this.opts?.inline && !nextToArg) {
+
+				if (!this.opts.inline && !nextToArg) {
 					str += '\n'
 				}
 			})
@@ -56,9 +68,15 @@ export class Test {
 			str = this.#removeExcessIndent(str)
 
 			if (isPrepend) {
-				this.output = str + this.output // Prepend the processed string
+				this.internalOutput = str + this.internalOutput
+				if (this.opts.output !== undefined) {
+					this.opts.output = str + this.opts.output
+				}
 			} else {
-				this.output += str // Append the processed string
+				this.internalOutput += str
+				if (this.opts.output !== undefined) {
+					this.opts.output += str
+				}
 			}
 		}
 	}
@@ -66,23 +84,25 @@ export class Test {
 	#removeExcessIndent(str: string): string {
 		const lines = str.split('\n')
 
-		// Find the minimum indentation of non-empty lines (excluding the first line)
 		const minIndent = lines
-			.slice(1) // Skip the first line
-			.filter((line) => line.trim().length > 0) // Exclude empty lines
+			.slice(1)
+			.filter((line) => line.trim().length > 0)
 			.reduce((min, line) => {
 				const leadingWhitespace = line.match(/^\s*/)?.[0].length || 0
 				return Math.min(min, leadingWhitespace)
 			}, Infinity)
 
-		if (minIndent === Infinity) return str // In case all lines are empty or it's a single-line string
+		if (minIndent === Infinity) return str
 
-		// Remove the minimum indentation from all lines except the first
 		const adjustedLines = lines.map((line, index) => {
-			if (index === 0) return line // Keep the first line as is
-			return line.slice(minIndent) // Remove the excess indent from other lines
+			if (index === 0) return line
+			return line.slice(minIndent)
 		})
 
 		return adjustedLines.join('\n')
+	}
+
+	#trimTrailingNewLine(str: string): string {
+		return str.replace(/\n\s*$/, '')
 	}
 }

@@ -3,86 +3,92 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Test_instances, _Test_processStrings, _Test_removeExcessIndent;
-export class Test {
-    constructor(string, opts) {
-        _Test_instances.add(this);
-        this.output = string || '';
+var _Str_instances, _Str_processStrings, _Str_removeExcessIndent, _Str_trimTrailingNewLine;
+export class Str {
+    constructor(start, opts = {}) {
+        _Str_instances.add(this);
         this.opts = opts;
-        this.initialString = string;
-        return this;
+        this.initialString = start;
+        this.internalOutput = start || '';
+        if (this.opts.output !== undefined) {
+            this.opts.output = this.internalOutput;
+        }
     }
     append(strings, ...values) {
-        __classPrivateFieldGet(this, _Test_instances, "m", _Test_processStrings).call(this, strings, values, false); // false indicates appending
+        __classPrivateFieldGet(this, _Str_instances, "m", _Str_processStrings).call(this, strings, values, false); // false indicates appending
         return this;
     }
     prepend(strings, ...values) {
-        // Remove the initial string from the output before prepending
-        if (this.initialString &&
-            this.output.startsWith(this.initialString)) {
-            this.output = this.output.slice(this.initialString.length);
+        if (this.initialString && this.output.startsWith(this.initialString)) {
+            this.internalOutput = this.internalOutput.slice(this.initialString.length);
+            if (this.opts.output !== undefined) {
+                this.opts.output = this.opts.output.slice(this.initialString.length);
+            }
         }
-        __classPrivateFieldGet(this, _Test_instances, "m", _Test_processStrings).call(this, strings, values, true); // true indicates prepending
-        // Then re-apply it so it's at the start of the string
-        this.output = this.initialString + this.output;
+        __classPrivateFieldGet(this, _Str_instances, "m", _Str_processStrings).call(this, strings, values, true); // true indicates prepending
+        this.internalOutput = this.initialString + this.internalOutput;
+        if (this.opts.output !== undefined) {
+            this.opts.output = this.initialString + this.opts.output;
+        }
         return this;
     }
+    get output() {
+        var _a;
+        return __classPrivateFieldGet(this, _Str_instances, "m", _Str_trimTrailingNewLine).call(this, (_a = this.opts.output) !== null && _a !== void 0 ? _a : this.internalOutput);
+    }
     get() {
-        return this.output;
+        var _a;
+        return __classPrivateFieldGet(this, _Str_instances, "m", _Str_trimTrailingNewLine).call(this, (_a = this.opts.output) !== null && _a !== void 0 ? _a : this.internalOutput);
     }
 }
-_Test_instances = new WeakSet(), _Test_processStrings = function _Test_processStrings(strings, values, isPrepend) {
+_Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrings(strings, values, isPrepend) {
     if (Array.isArray(strings)) {
         let str = '';
         strings.forEach((string, a) => {
-            var _a;
             if (values[a] === 0)
                 values[a] = values[a].toString();
             str += string + (values[a] || '');
             let nextToArg = a < strings.length - 1;
-            if (!((_a = this.opts) === null || _a === void 0 ? void 0 : _a.inline) && !nextToArg) {
+            if (!this.opts.inline && !nextToArg) {
                 str += '\n';
             }
         });
-        str = __classPrivateFieldGet(this, _Test_instances, "m", _Test_removeExcessIndent).call(this, str);
+        str = __classPrivateFieldGet(this, _Str_instances, "m", _Str_removeExcessIndent).call(this, str);
         if (isPrepend) {
-            this.output = str + this.output; // Prepend the processed string
+            this.internalOutput = str + this.internalOutput;
+            if (this.opts.output !== undefined) {
+                this.opts.output = str + this.opts.output;
+            }
         }
         else {
-            this.output += str; // Append the processed string
+            this.internalOutput += str;
+            if (this.opts.output !== undefined) {
+                this.opts.output += str;
+            }
         }
     }
-}, _Test_removeExcessIndent = function _Test_removeExcessIndent(str) {
+}, _Str_removeExcessIndent = function _Str_removeExcessIndent(str) {
     const lines = str.split('\n');
-    // Find the minimum indentation of non-empty lines (excluding the first line)
     const minIndent = lines
-        .slice(1) // Skip the first line
-        .filter((line) => line.trim().length > 0) // Exclude empty lines
+        .slice(1)
+        .filter((line) => line.trim().length > 0)
         .reduce((min, line) => {
         var _a;
         const leadingWhitespace = ((_a = line.match(/^\s*/)) === null || _a === void 0 ? void 0 : _a[0].length) || 0;
         return Math.min(min, leadingWhitespace);
     }, Infinity);
     if (minIndent === Infinity)
-        return str; // In case all lines are empty or it's a single-line string
-    // Remove the minimum indentation from all lines except the first
+        return str;
     const adjustedLines = lines.map((line, index) => {
         if (index === 0)
-            return line; // Keep the first line as is
-        return line.slice(minIndent); // Remove the excess indent from other lines
+            return line;
+        return line.slice(minIndent);
     });
     return adjustedLines.join('\n');
+}, _Str_trimTrailingNewLine = function _Str_trimTrailingNewLine(str) {
+    return str.replace(/\n\s*$/, '');
 };
-let str = new Test('@');
-let thing = 'yoooo';
-let second = 'asasas';
-// prettier-ignore
-str.append `:where(html) {`
-    .append `	--font-size-1: ${thing} ${second};`
-    .append `	--font-size-2: sasas;`
-    .append `}`
-    .prepend `div {
-				test
-				test
-			}`;
-console.log(str.output);
+let opts = { output: '' };
+let str = new Str('@', opts);
+str.append `Test`.append `what`.prepend `check`;
+console.log(str.get()); // This will output "Test"
