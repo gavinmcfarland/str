@@ -38,7 +38,7 @@ console.log(str.output);
 
   `Str(string, Opts)`
 
-  When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you have to include it manually eg `Str('@\n')`.
+  When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you should include it manually eg `Str('@\n')`.
 
   ```ts
   interface Opts {
