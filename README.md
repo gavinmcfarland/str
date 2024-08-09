@@ -1,6 +1,6 @@
 # str
 
-Str is a template literal tag function that makes it easy to build up strings while ignoring excessive white space.
+Str is a template literal tag function that makes it easy to build up strings while ignoring unnecessary indents.
 
 ## Usage
 
