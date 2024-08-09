@@ -1,15 +1,16 @@
 {
 	"useTabs": true,
+	"semi": false,
 	"singleQuote": true,
-	"trailingComma": "none",
-	"printWidth": 60,
+	"printWidth": 120,
+	"braceStyle": "collapse,preserve-inline",
 	"overrides": [
 		{
-			"files": "*.svelte",
+			"files": "*.md",
 			"options": {
-				"parser": "svelte"
+				"useTabs": false,
+				"tabWidth": 4
 			}
 		}
-	],
-	"svelteBracketNewLine": false
+	]
 }

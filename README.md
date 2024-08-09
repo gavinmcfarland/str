@@ -9,51 +9,51 @@ Str is a template literal tag function that makes it easy to build up strings wh
 By default, Str appends strings on new lines.
 
 ```js
-let str = new Str();
+let str = new Str()
 
-str.append`.colors {`;
+str.append`.colors {`
 for (let color in colors) {
-	let value = colors[color];
-	str.append` --${color}: ${value};`;
+    let value = colors[color]
+    str.append` --${color}: ${value};`
 }
-str.append`}`;
+str.append`}`
 
-console.log(str.output);
+console.log(str.output)
 ```
 
 **Output**
 
 ```css
 .colors {
-	--navy: '#001F3F';
-	--blue: '#0074D9';
-	--aqua: '#7FDBFF';
-	--teal: '#39CCCC';
+    --navy: '#001F3F';
+    --blue: '#0074D9';
+    --aqua: '#7FDBFF';
+    --teal: '#39CCCC';
 }
 ```
 
 ## API
 
-- ### Start string
+-   ### Start string
 
-  `Str(string, Opts)`
+    `Str(string, Opts)`
 
-  When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you should include it manually eg `Str('@\n')`.
+    When you start the class with a string, it will always begin with that string, even if you prepend something later. If you need a new line, you should include it manually eg `Str('@\n')`.
 
-  ```ts
-  interface Opts {
-  	inline?: boolean;
-  }
-  ```
+    ```ts
+    interface Opts {
+        inline?: boolean
+    }
+    ```
 
-- ### Append a string
+-   ### Append a string
 
-  ` str.append`` `
+    ` str.append`` `
 
-- ### Prepend a string
+-   ### Prepend a string
 
-  ` str.prepend`` `
+    ` str.prepend`` `
 
-- ### Get the output
+-   ### Get the output
 
-  `str.output`
+    `str.output`
