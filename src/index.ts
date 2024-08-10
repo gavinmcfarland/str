@@ -5,17 +5,12 @@ interface Opts {
 
 export class Str {
 	private opts: Opts
-	private internalOutput: string
 	private initialString?: string
 
 	constructor(start?: string, opts: Opts = {}) {
 		this.opts = opts
 		this.initialString = start
-		this.internalOutput = start || ''
-
-		if (this.opts.external !== undefined) {
-			this.opts.external = this.internalOutput
-		}
+		this.opts.external = ''
 	}
 
 	append(strings: TemplateStringsArray, ...values: any) {
@@ -24,17 +19,19 @@ export class Str {
 	}
 
 	prepend(strings: TemplateStringsArray, ...values: any) {
-		if (this.initialString && this.output.startsWith(this.initialString)) {
-			this.internalOutput = this.internalOutput.slice(this.initialString.length)
-			if (this.opts.external !== undefined) {
-				this.opts.external = this.opts.external.slice(this.initialString.length)
+		// If starts with initial string, remove
+		// let removedInitialString
+		if (this.opts.external && this.initialString) {
+			if (this.opts.external.startsWith(this.initialString)) {
+				// removedInitialString = true
+				this.opts.external = this.opts.external!.slice(this.initialString.length)
 			}
 		}
 
 		this.#processStrings(strings, values, true) // true indicates prepending
 
-		this.internalOutput = this.initialString + this.internalOutput
-		if (this.opts.external !== undefined) {
+		// Re-apply initial string
+		if (this.initialString) {
 			this.opts.external = this.initialString + this.opts.external
 		}
 
@@ -42,61 +39,74 @@ export class Str {
 	}
 
 	get output() {
-		return this.#trimTrailingNewLine(this.opts.external ?? this.internalOutput)
+		return this.#trimTrailingNewLine(this.opts.external ?? '')
 	}
 
 	get() {
-		return this.#trimTrailingNewLine(this.opts.external ?? this.internalOutput)
+		return this.#trimTrailingNewLine(this.opts.external ?? '')
 	}
 
 	#processStrings(strings: TemplateStringsArray, values: any, isPrepend: boolean) {
 		if (Array.isArray(strings)) {
 			let str = ''
 
-			strings.forEach((string, a) => {
-				if (values[a] === 0) values[a] = values[a].toString()
-
-				str += string + (values[a] || '')
-
-				let nextToArg = a < strings.length - 1
-
-				if (!this.opts.inline && !nextToArg) {
-					str += '\n'
-				}
-			})
-
-			str = this.#removeExcessIndent(str)
-
-			if (isPrepend) {
-				this.internalOutput = str + this.internalOutput
-				if (this.opts.external !== undefined) {
-					this.opts.external = str + this.opts.external
-				}
-			} else {
-				this.internalOutput += str
-				if (this.opts.external !== undefined) {
-					this.opts.external += str
+			// Re-apply initial string
+			if (!isPrepend) {
+				if (this.initialString && !this.opts.external) {
+					str = this.initialString + str
 				}
 			}
+
+			if (!this.opts.inline && !isPrepend && this.opts.external) {
+				str = str + '\n'
+			}
+
+			let str2 = ''
+			strings.forEach((string, a) => {
+				// If string starts with a new line, remove it
+				if (a === 0) {
+					string = string.replace(/^\n+/, '')
+				}
+
+				if (values[a] === 0) values[a] = values[a].toString()
+
+				str2 += string + (values[a] || '')
+			})
+
+			str = str + this.#removeExcessIndent(str2)
+
+			if (!this.opts.inline && isPrepend && this.opts.external) {
+				str = str + '\n'
+			}
+
+			if (isPrepend) {
+				str = str + this.opts.external
+			} else {
+				str = this.opts.external + str
+			}
+
+			this.opts.external = str
 		}
 	}
 
 	#removeExcessIndent(str: string): string {
 		const lines = str.split('\n')
 
+		// Find the minimum indentation of non-empty lines (excluding the first line)
 		const minIndent = lines
-			.slice(1)
-			.filter((line) => line.trim().length > 0)
+			.slice(1) // Skip the first line
+			.filter((line) => line.trim().length > 0) // Exclude empty lines
 			.reduce((min, line) => {
 				const leadingWhitespace = line.match(/^\s*/)?.[0].length || 0
 				return Math.min(min, leadingWhitespace)
 			}, Infinity)
 
-		if (minIndent === Infinity) return str
+		if (minIndent === Infinity) return str // In case all lines are empty or it's a single-line string
 
+		// Remove the minimum indentation from all lines except the first
 		const adjustedLines = lines.map((line, index) => {
-			if (index === 0) return line
-			return line.slice(minIndent)
+			// if (index === 0) return line // Keep the first line as is
+			return line.slice(minIndent) // Remove the excess indent from other lines
 		})
 
 		return adjustedLines.join('\n')
@@ -106,3 +116,18 @@ export class Str {
 		return str.replace(/\n\s*$/, '')
 	}
 }
+
+// let opts = { external: '' }
+// let str = new Str('@', opts)
+
+// // str.append`fourth`.append`fith`.append`six`.prepend`third`.prepend`second`.append`seventh`.prepend`first`
+// // str.prepend`third`.prepend`second`.prepend`first`
+// // str.append`one`.append`two`.append`three`
+// // str.prepend`third`.prepend`second`.prepend`first`.append`fourth`.append`fith`
+
+// str.append`
+// 			:root {
+// 				--font-size: 16px;
+// 			}`
+
+// console.log('--', opts.external)
