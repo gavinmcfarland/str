@@ -52,8 +52,8 @@ console.log(str.output)
     }
     ```
 
-    -   `inline` By default Str appends strings in a block with new lines, to change this, set to `true`.
-    -   `external` To access the output string externally, pass it as an object with Str('', opts). Note that it might include a trailing newline, which you can't remove without using a getter.
+    -   **`inline`** By default Str appends strings in a block with new lines, to change this, set to `true`.
+    -   **`external`** To access the output string externally, pass it as an object with `Str('', opts)`.
 
 -   ### Append a string
 
