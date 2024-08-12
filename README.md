@@ -5,6 +5,12 @@ Str is a template literal tag function that makes it easy to build up strings wh
 > [!NOTE]
 > This package has not been published yet and is a work in progress.
 
+## Install
+
+```shell
+npm install https://github.com/gavinmcfarland/str.git --save-dev
+```
+
 ## Usage
 
 ### Appending block strings
@@ -12,6 +18,8 @@ Str is a template literal tag function that makes it easy to build up strings wh
 By default, Str appends strings on new lines.
 
 ```js
+import { Str } from 'str'
+
 let str = new Str()
 
 str.append`.colors {`

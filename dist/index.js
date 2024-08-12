@@ -104,29 +104,3 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
 }, _Str_trimTrailingNewLine = function _Str_trimTrailingNewLine(str) {
     return str.replace(/\n\s*$/, '');
 };
-let opts = { external: '' };
-let str = new Str('@', opts);
-// // str.append`fourth`.append`fith`.append`six`.prepend`third`.prepend`second`.append`seventh`.prepend`first`
-// // str.prepend`third`.prepend`second`.prepend`first`
-// // str.append`one`.append`two`.append`three`
-// // str.prepend`third`.prepend`second`.prepend`first`.append`fourth`.append`fith`
-str.append `
-			:root {
-				--font-size: 16px;
-			}
-				`;
-str.append `
-			:root {
-				--font-size: 16px;
-			}`;
-str.append `:root {
-				--font-size: 16px;
-			}`;
-str.append `			:root`;
-let str2 = new Str(':', opts);
-str2.append `
-			:root {
-				--font-size: 16px;
-			}
-				`;
-console.log('--', str.output);

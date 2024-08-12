@@ -1,16 +1,19 @@
 {
-    "name": "str",
-    "version": "1.0.0",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "build": "tsc --outDir ./dist",
-        "test": "node dist/index.js"
-    },
-    "author": "",
-    "license": "ISC",
-    "description": "",
-    "devDependencies": {
-        "typescript": "^5.5.4"
-    }
+	"name": "str",
+	"version": "1.0.0",
+	"main": "dist/index.js",
+	"type": "module",
+	"scripts": {
+		"build": "tsc --outDir ./dist",
+		"test": "node dist/index.js"
+	},
+	"files": [
+		"dist"
+	],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"typescript": "^5.5.4"
+	}
 }
