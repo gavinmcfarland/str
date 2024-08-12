@@ -9,7 +9,7 @@ export class Str {
         _Str_instances.add(this);
         this.opts = opts;
         this.initialString = start;
-        this.opts.external = opts.external;
+        this.opts.external = opts.external || '';
     }
     append(strings, ...values) {
         __classPrivateFieldGet(this, _Str_instances, "m", _Str_processStrings).call(this, strings, values, false); // false indicates appending
@@ -104,3 +104,6 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
 }, _Str_trimTrailingNewLine = function _Str_trimTrailingNewLine(str) {
     return str.replace(/\n\s*$/, '');
 };
+let str = new Str();
+str.append `hello`;
+console.log(str.output);

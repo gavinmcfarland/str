@@ -8,7 +8,7 @@ Str is a template literal tag function that makes it easy to build up strings wh
 ## Install
 
 ```shell
-npm install https://github.com/gavinmcfarland/str.git --save-dev
+npm install github:gavinmcfarland/str --save-dev
 ```
 
 ## Usage

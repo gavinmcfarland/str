@@ -10,7 +10,7 @@ export class Str {
 	constructor(start?: string, opts: Opts = {}) {
 		this.opts = opts
 		this.initialString = start
-		this.opts.external = opts.external
+		this.opts.external = opts.external || ''
 	}
 
 	append(strings: TemplateStringsArray, ...values: any) {
