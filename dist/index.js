@@ -9,7 +9,7 @@ export class Str {
         _Str_instances.add(this);
         this.opts = opts;
         this.initialString = start;
-        this.opts.external = '';
+        this.opts.external = opts.external;
     }
     append(strings, ...values) {
         __classPrivateFieldGet(this, _Str_instances, "m", _Str_processStrings).call(this, strings, values, false); // false indicates appending
@@ -63,6 +63,7 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
             str2 += string + (values[a] || '');
         });
         str = str + __classPrivateFieldGet(this, _Str_instances, "m", _Str_removeExcessIndent).call(this, str2);
+        // str = str + str2
         if (!this.opts.inline && isPrepend && this.opts.external) {
             str = str + '\n';
         }
@@ -75,7 +76,13 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
         this.opts.external = str;
     }
 }, _Str_removeExcessIndent = function _Str_removeExcessIndent(str) {
+    // Remove trailing white space
+    str = str.replace(/\n\s*$/, '');
     const lines = str.split('\n');
+    // Remove white space from first line if more than 1 line
+    if (lines.length > 1) {
+        lines[0] = lines[0].trim();
+    }
     // Find the minimum indentation of non-empty lines (excluding the first line)
     const minIndent = lines
         .slice(1) // Skip the first line
@@ -89,7 +96,8 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
         return str; // In case all lines are empty or it's a single-line string
     // Remove the minimum indentation from all lines except the first
     const adjustedLines = lines.map((line, index) => {
-        // if (index === 0) return line // Keep the first line as is
+        if (index === 0)
+            return line; // Keep the first line as is
         return line.slice(minIndent); // Remove the excess indent from other lines
     });
     return adjustedLines.join('\n');
@@ -98,12 +106,27 @@ _Str_instances = new WeakSet(), _Str_processStrings = function _Str_processStrin
 };
 let opts = { external: '' };
 let str = new Str('@', opts);
-// str.append`fourth`.append`fith`.append`six`.prepend`third`.prepend`second`.append`seventh`.prepend`first`
-// str.prepend`third`.prepend`second`.prepend`first`
-// str.append`one`.append`two`.append`three`
-// str.prepend`third`.prepend`second`.prepend`first`.append`fourth`.append`fith`
+// // str.append`fourth`.append`fith`.append`six`.prepend`third`.prepend`second`.append`seventh`.prepend`first`
+// // str.prepend`third`.prepend`second`.prepend`first`
+// // str.append`one`.append`two`.append`three`
+// // str.prepend`third`.prepend`second`.prepend`first`.append`fourth`.append`fith`
+str.append `
+			:root {
+				--font-size: 16px;
+			}
+				`;
 str.append `
 			:root {
 				--font-size: 16px;
 			}`;
-console.log('--', opts.external);
+str.append `:root {
+				--font-size: 16px;
+			}`;
+str.append `			:root`;
+let str2 = new Str(':', opts);
+str2.append `
+			:root {
+				--font-size: 16px;
+			}
+				`;
+console.log('--', str.output);

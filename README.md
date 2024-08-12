@@ -53,7 +53,7 @@ console.log(str.output)
     ```
 
     -   **`inline`** By default Str appends strings in a block with new lines, to change this, set to `true`.
-    -   **`external`** To access the output string externally, pass it as an object with `Str('', opts)`.
+    -   **`external`** Allows you to combine strings by storing them externally. To use, make sure you pass the whole object, eg `Str('', opts)`.
 
 -   ### Append a string
 

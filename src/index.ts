@@ -10,7 +10,7 @@ export class Str {
 	constructor(start?: string, opts: Opts = {}) {
 		this.opts = opts
 		this.initialString = start
-		this.opts.external = ''
+		this.opts.external = opts.external
 	}
 
 	append(strings: TemplateStringsArray, ...values: any) {
@@ -74,6 +74,7 @@ export class Str {
 			})
 
 			str = str + this.#removeExcessIndent(str2)
+			// str = str + str2
 
 			if (!this.opts.inline && isPrepend && this.opts.external) {
 				str = str + '\n'
@@ -90,7 +91,14 @@ export class Str {
 	}
 
 	#removeExcessIndent(str: string): string {
+		// Remove trailing white space
+		str = str.replace(/\n\s*$/, '')
 		const lines = str.split('\n')
+
+		// Remove white space from first line if more than 1 line
+		if (lines.length > 1) {
+			lines[0] = lines[0].trim()
+		}
 
 		// Find the minimum indentation of non-empty lines (excluding the first line)
 		const minIndent = lines
@@ -105,7 +113,7 @@ export class Str {
 
 		// Remove the minimum indentation from all lines except the first
 		const adjustedLines = lines.map((line, index) => {
-			// if (index === 0) return line // Keep the first line as is
+			if (index === 0) return line // Keep the first line as is
 			return line.slice(minIndent) // Remove the excess indent from other lines
 		})
 
@@ -116,18 +124,3 @@ export class Str {
 		return str.replace(/\n\s*$/, '')
 	}
 }
-
-// let opts = { external: '' }
-// let str = new Str('@', opts)
-
-// // str.append`fourth`.append`fith`.append`six`.prepend`third`.prepend`second`.append`seventh`.prepend`first`
-// // str.prepend`third`.prepend`second`.prepend`first`
-// // str.append`one`.append`two`.append`three`
-// // str.prepend`third`.prepend`second`.prepend`first`.append`fourth`.append`fith`
-
-// str.append`
-// 			:root {
-// 				--font-size: 16px;
-// 			}`
-
-// console.log('--', opts.external)
